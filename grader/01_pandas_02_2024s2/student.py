@@ -7,12 +7,6 @@ from pandas import DataFrame
     ASSIGNMENT 1 (STUDENT VERSION):
     Using pandas to explore youtube trending data from GB (GBvideos.csv and GB_category_id.json) and answer the questions.
 """
-vdo_df = pd.read_csv("/data/GBvideos.csv")
-# vdo_df = pd.read_csv("USvideos.csv")
-
-with open("/data/GB_category_id.json") as fd:
-    # with open("US_category_id.json") as fd:
-    cat = json.load(fd)
 
 
 def Q1():
@@ -21,6 +15,8 @@ def Q1():
     - To access 'GBvideos.csv', use the path '/data/GBvideos.csv'.
     """
     # TODO: Paste your code here
+    vdo_df = pd.read_csv("/data/GBvideos.csv")
+    # vdo_df = pd.read_csv("USvideos.csv")
     vdo_df.drop_duplicates(inplace=True)
     return vdo_df.shape[0]
 
@@ -32,8 +28,8 @@ def Q2(vdo_df):
         - The duplicate rows of vdo_df have been removed.
     """
     # TODO: Paste your code here
-    vdo_df.drop_duplicates(inplace=True)
-    return vdo_df[vdo_df["dislikes"] > vdo_df["likes"]]["title"].unique().shape[0]
+    # return vdo_df[vdo_df["dislikes"] > vdo_df["likes"]]["title"].unique().shape[0]
+    return vdo_df[vdo_df["dislikes"] > vdo_df["likes"]]["title"].nunique()
 
 
 def Q3(vdo_df):
@@ -44,7 +40,6 @@ def Q3(vdo_df):
         - The trending date of vdo_df is represented as 'YY.DD.MM'. For example, January 22, 2018, is represented as '18.22.01'.
     """
     # TODO: Paste your code here
-    vdo_df.drop_duplicates(inplace=True)
     return vdo_df[
         (vdo_df["trending_date"] == "18.22.01") & (vdo_df["comment_count"] > 10000)
     ].shape[0]
@@ -57,7 +52,6 @@ def Q4(vdo_df: DataFrame):
         - The duplicate rows of vdo_df have been removed.
     """
     # TODO:  Paste your code here
-    vdo_df.drop_duplicates(inplace=True)
     df = vdo_df.groupby("trending_date")
     return df["comment_count"].mean().idxmin()
 
@@ -71,7 +65,9 @@ def Q5(vdo_df):
         - To access 'GB_category_id.json', use the path '/data/GB_category_id.json'.
     """
     # TODO:  Paste your code here
-    vdo_df.drop_duplicates(inplace=True)
+    with open("/data/GB_category_id.json") as fd:
+        # with open("US_category_id.json") as fd:
+        cat = json.load(fd)
 
     cat_list = []
     for item in cat["items"]:
@@ -79,20 +75,26 @@ def Q5(vdo_df):
 
     cat_df = pd.DataFrame(cat_list, columns=["id", "category"])
     vdo_df_with_cat = vdo_df.merge(cat_df, left_on="category_id", right_on="id")
-    filtered_df = vdo_df_with_cat[
-        vdo_df_with_cat["category"].isin(["Sports", "Comedy"])
-    ]
+
+    # filtered_df = vdo_df_with_cat[
+    #     vdo_df_with_cat["category"].isin(["Sports", "Comedy"])
+    # ]
     grouped_df = (
-        filtered_df.groupby(["trending_date", "category"])["views"].sum().reset_index()
+        vdo_df_with_cat.groupby(["trending_date", "category"])["views"]
+        .sum()
+        .reset_index()
     )
 
-    pivot_df = grouped_df.pivot(
-        index="trending_date", columns="category", values="views"
-    )
-    pivot_df["sports_greater"] = pivot_df["Sports"] > pivot_df["Comedy"]
-    count = pivot_df["sports_greater"].sum()
+    # pivot_df = grouped_df.pivot(
+    #     index="trending_date", columns="category", values="views"
+    # )
+    # pivot_df["sports_greater"] = pivot_df["Sports"] > pivot_df["Comedy"]
+    # count = pivot_df["sports_greater"].sum()
 
-    return count
+    sport_df = grouped_df[grouped_df["category"] == "Sports"].reset_index()
+    comedy_df = grouped_df[grouped_df["category"] == "Comedy"].reset_index()
+
+    return (sport_df["views"] > comedy_df["views"]).sum()
 
 
 # print(Q5(vdo_df))
