@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
@@ -29,7 +30,15 @@ def Q2(df: DataFrame):
         How many columns do we have left?
     """
     # TODO: Code here
-    return None
+    half_missing = df.isnull().sum() > df.shape[0] / 2
+    df.drop(df.columns[half_missing], axis=1, inplace=True)
+
+    flat_cols = df.select_dtypes(include="object").apply(
+        lambda col: col.value_counts(normalize=True).max() > 0.7
+    )
+    df.drop(columns=flat_cols[flat_cols].index, inplace=True)
+
+    return df.shape[1]
 
 
 def Q3(df: DataFrame):
@@ -39,7 +48,9 @@ def Q3(df: DataFrame):
          How many rows do we have left?
     """
     # TODO: Code here
-    return None
+    df.dropna(subset=["Survived"], inplace=True)
+
+    return df.shape[0]
 
 
 def Q4(df: DataFrame):
@@ -53,7 +64,16 @@ def Q4(df: DataFrame):
          Hint: Use function round(_, 2)
     """
     # TODO: Code here
-    return None
+    q25, q75 = np.percentile(df["Fare"], [25, 75])
+    iqr = q75 - q25
+
+    min_outlier = q25 - 1.5 * iqr
+    max_outlier = q75 + 1.5 * iqr
+
+    df.loc[df["Fare"] < min_outlier, "Fare"] = min_outlier
+    df.loc[df["Fare"] > max_outlier, "Fare"] = max_outlier
+
+    return round(df["Fare"].mean(), 2)
 
 
 def Q5(df: DataFrame):
