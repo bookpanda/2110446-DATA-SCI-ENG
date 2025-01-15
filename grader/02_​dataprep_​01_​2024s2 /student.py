@@ -128,4 +128,17 @@ def Q7(df: DataFrame):
         Don't forget to impute missing values with mean.
     """
     # TODO: Code here
-    return None
+    num_imp = SimpleImputer(missing_values=np.nan, strategy="mean")
+    df["Survived"] = pd.DataFrame(num_imp.fit_transform(df[["Survived"]]))
+
+    y = df.pop("Survived")
+    X = df
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, stratify=y, test_size=0.3, random_state=123
+    )
+    survived_train = y_train.sum() / y_train.shape[0]
+    survivied_test = y_test.sum() / y_test.shape[0]
+    survived_all = y.sum() / y.shape[0]
+
+    return round(survived_all, 2), round(survived_train, 2), round(survivied_test, 2)
