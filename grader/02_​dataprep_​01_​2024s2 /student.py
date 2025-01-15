@@ -130,6 +130,7 @@ def Q7(df: DataFrame):
     # TODO: Code here
     num_imp = SimpleImputer(missing_values=np.nan, strategy="mean")
     df["Survived"] = pd.DataFrame(num_imp.fit_transform(df[["Survived"]]))
+    df["Survived"] = df["Survived"].apply(lambda x: 1.0 if x > 0.5 else 0.0)
 
     y = df.pop("Survived")
     X = df
@@ -138,7 +139,5 @@ def Q7(df: DataFrame):
         X, y, stratify=y, test_size=0.3, random_state=123
     )
     survived_train = y_train.sum() / y_train.shape[0]
-    survivied_test = y_test.sum() / y_test.shape[0]
-    survived_all = y.sum() / y.shape[0]
 
-    return round(survived_all, 2), round(survived_train, 2), round(survivied_test, 2)
+    return round(survived_train, 2)
