@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
 """
@@ -84,8 +85,12 @@ def Q5(df: DataFrame):
          Hint: Use function round(_, 2)
     """
     # TODO: Code here
+    num_imp = SimpleImputer(missing_values=np.nan, strategy="mean")
+    df[["Pclass", "Age", "SibSp"]] = pd.DataFrame(
+        num_imp.fit_transform(df[["Pclass", "Age", "SibSp"]])
+    )
 
-    return None
+    return round(df["Age"].mean(), 2)
 
 
 def Q6(df: DataFrame):
