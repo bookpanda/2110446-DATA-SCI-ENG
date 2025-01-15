@@ -3,6 +3,7 @@ import pandas as pd
 from pandas import DataFrame
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
 
 """
     ASSIGNMENT 2 (STUDENT VERSION):
@@ -102,7 +103,19 @@ def Q6(df: DataFrame):
         Hint: Use function round(_, 2)
     """
     # TODO: Code here
-    return None
+    enc = OneHotEncoder(handle_unknown="ignore")
+    # passing bridge-types-cat column (label encoded values of bridge_types)
+    nominal_columns = ["Embarked"]
+    enc_df = pd.DataFrame(enc.fit_transform(df[nominal_columns]).toarray())
+    unique_vals = enc.categories_[0]
+    new_col_names = [f"Embarked_{val}" for val in unique_vals]
+    enc_df.columns = new_col_names
+
+    df = pd.concat([df, enc_df], axis=1)
+
+    mean_embarked_q = round(enc_df["Embarked_Q"].mean(), 2)
+
+    return mean_embarked_q
 
 
 def Q7(df: DataFrame):
