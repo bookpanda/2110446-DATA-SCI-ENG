@@ -17,7 +17,6 @@ def Q1(df: DataFrame):
         How many rows are there in the "titanic_to_student.csv"?
     """
     # TODO: Code here
-
     return df.shape[0]
 
 
@@ -85,6 +84,7 @@ def Q5(df: DataFrame):
          Hint: Use function round(_, 2)
     """
     # TODO: Code here
+
     return None
 
 
