@@ -7,7 +7,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder
 
 warnings.filterwarnings(
     "ignore", category=ConvergenceWarning
@@ -88,7 +88,7 @@ class BankLogistic:
         X = self.df
 
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            X, y, stratify=y, test_size=0.3, random_state=0
+            X, y, test_size=0.3, random_state=0
         )
         self.X_train.reset_index(drop=True, inplace=True)
         self.X_test.reset_index(drop=True, inplace=True)
@@ -178,8 +178,6 @@ class BankLogistic:
             "university.degree": 7,
         }
 
-        self.num_cols = num_cols
-
         self.X_train["education"] = self.X_train["education"].map(education_order)
         self.X_test["education"] = self.X_test["education"].map(education_order)
 
@@ -202,11 +200,6 @@ class BankLogistic:
         """
         # TODO: Paste your code here
         self.Q6()
-
-        # numeric_cols = self.num_cols.append(pd.Index(["education"]))
-        # scaler = StandardScaler()
-        # self.X_train[numeric_cols] = scaler.fit_transform(self.X_train[numeric_cols])
-        # self.X_test[numeric_cols] = scaler.transform(self.X_test[numeric_cols])
 
         logmodel = LogisticRegression(
             class_weight="balanced", max_iter=500, random_state=2025
