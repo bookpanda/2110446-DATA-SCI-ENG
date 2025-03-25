@@ -6,6 +6,7 @@ annotated-types==0.7.0
 appnope==0.1.4
 asttokens==3.0.0
 attrs==24.3.0
+avro-python3==1.10.2
 beautifulsoup4==4.12.3
 certifi==2024.12.14
 charset-normalizer==3.4.1
