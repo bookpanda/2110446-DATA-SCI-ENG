@@ -8,3 +8,4 @@ filtered_loans_2007.csv
 cleaned_loans_2007.csv
 *.csv
 .early.coverage
+spark

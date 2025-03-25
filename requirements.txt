@@ -23,6 +23,7 @@ et_xmlfile==2.0.0
 evaluate==0.4.3
 executing==2.1.0
 filelock==3.16.1
+findspark==2.0.1
 fonttools==4.55.3
 frozenlist==1.5.0
 fsspec==2024.12.0
@@ -68,12 +69,14 @@ protobuf==5.29.2
 psutil==6.1.1
 ptyprocess==0.7.0
 pure_eval==0.2.3
+py4j==0.10.9.7
 pyarrow==19.0.1
 pydantic==2.10.4
 pydantic_core==2.27.2
 Pygments==2.19.0
 pyparsing==3.2.1
 PySocks==1.7.1
+pyspark==3.5.5
 pythainlp==5.0.5
 python-dateutil==2.9.0.post0
 pytorch-lightning==2.5.0.post0
