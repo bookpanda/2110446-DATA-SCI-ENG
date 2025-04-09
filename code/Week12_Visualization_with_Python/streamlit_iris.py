@@ -1,12 +1,12 @@
-import streamlit as st
-import pandas as pd
 import numpy as np
-from sklearn.datasets import load_iris
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import streamlit as st
 from plotly.subplots import make_subplots
+from sklearn.cluster import KMeans
+from sklearn.datasets import load_iris
+from sklearn.preprocessing import StandardScaler
 
 # Page configuration
 st.set_page_config(layout="wide")
@@ -27,7 +27,7 @@ X_scaled = scaler.fit_transform(X)
 
 # Sidebar controls
 st.sidebar.header('Analysis Controls')
-st.sidebar.write("Create a slider here")
+max_k = st.sidebar.slider("Select Number of Clusters", min_value=1, max_value=6, value=3)
 
 # 1. Feature Distribution Analysis
 st.header('1. Feature Distributions by Species')
@@ -65,8 +65,17 @@ with col:
 # 2. Feature Relationships
 st.header('2. Feature Relationships')
 
-st.write("Draw a scatter matrix plot here")
+fig_scatter = px.scatter_matrix(df,
+                        dimensions=['sepal length (cm)','sepal width (cm)','petal length (cm)', 'petal width (cm)'], 
+                        color='Species', color_discrete_map=colors)
+fig_scatter.update_layout(
+    title=f'Feature Relationships by Species',
+    width=800, height=600
+)
 
+_, col, _ = st.columns([1,3,1])
+with col:
+    st.plotly_chart(fig_scatter)
 
 # 3. Feature Correlations
 st.header('3. Feature Correlations')
@@ -96,23 +105,34 @@ with col:
 # 4. Elbow Analysis
 st.header('4. Elbow Analysis')
 @st.cache_data
-def perform_elbow_analysis(X, max_clusters=10):
+def perform_elbow_analysis(X, max_clusters=6):
     inertias = []
-    for k in range(1, max_clusters + 1):
+    K = range(1, max_clusters + 1)
+    for k in K:
         kmeans = KMeans(n_clusters=k, random_state=42)
         kmeans.fit(X)
         inertias.append(kmeans.inertia_)
-    return inertias
+    return K, inertias
 
-inertias = perform_elbow_analysis(X_scaled)
+K, inertias = perform_elbow_analysis(X_scaled)
+fig_elbow = go.Figure()
+fig_elbow.add_trace(go.Scatter(x=list(K), y=inertias, mode='lines+markers'))
+fig_elbow.update_layout(
+    title="Elbow Method Analysis",
+    xaxis_title="Number of Clusters",
+    yaxis_title="Inertia",
+    showlegend=False
+)
+_, col, _ = st.columns([1,3,1])
+with col:
+    st.plotly_chart(fig_elbow)
 
-st.write("Draw a line chart here")
 
 # 5. Clustering Analysis
 st.header('5. Clustering Analysis')
 
 # Perform clustering
-clusters = 3
+clusters = max_k
 kmeans = KMeans(n_clusters=clusters, random_state=42)
 cluster_labels = kmeans.fit_predict(X_scaled)
 df['Cluster'] = cluster_labels.astype(str)
@@ -122,12 +142,22 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader('Clustering Result')
-    st.write("Draw a scatter plot here")
+    fig_scatter = px.scatter(df, x='petal length (cm)', y='petal width (cm)',
+                        color='Cluster')
+    fig_scatter.update_layout(
+        title=f'KMeans Clustering Result',
+    )
+    st.plotly_chart(fig_scatter)
 
 
 with col2:
     st.subheader('Actual Species')
-    st.write("Draw a scatter plot here")
+    fig_scatter = px.scatter(df, x='petal length (cm)', y='petal width (cm)',
+                        color='Species', color_discrete_map=colors)
+    fig_scatter.update_layout(
+        title=f'Actual Species Distribution',
+    )
+    st.plotly_chart(fig_scatter)
 
 
 # 6. Clustering Performance Analysis
