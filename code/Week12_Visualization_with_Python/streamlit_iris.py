@@ -121,7 +121,8 @@ fig_elbow.update_layout(
     title="Elbow Method Analysis",
     xaxis_title="Number of Clusters",
     yaxis_title="Inertia",
-    showlegend=False
+    showlegend=False,
+    width=800, height=600
 )
 _, col, _ = st.columns([1,3,1])
 with col:
