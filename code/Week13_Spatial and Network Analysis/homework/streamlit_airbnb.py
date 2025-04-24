@@ -124,8 +124,6 @@ try:
     viz_data = filtered_data[filtered_data['cluster'].isin(top_clusters.index)].copy()
     viz_data['color'] = viz_data['cluster'].map(cluster_colors)
     
-    st.write("Draw a scatter map for clusters here")
-    
     # Create cluster layer
     scatter_layer = pdk.Layer(
     "ScatterplotLayer",
@@ -170,8 +168,6 @@ try:
         initial_view_state=view_state,
         map_style=MAP_STYLES[map_style]
     ))
-    
-    st.write("Draw a hexagon map for clusters here")
     
     hexagon_layer = pdk.Layer(
         "HexagonLayer",
