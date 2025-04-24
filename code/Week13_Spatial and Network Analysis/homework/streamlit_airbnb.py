@@ -1,10 +1,11 @@
-import streamlit as st
-import pandas as pd
-import pydeck as pdk
-import plotly.express as px
-from sklearn.cluster import DBSCAN
-import matplotlib.pyplot as plt
 from datetime import datetime
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.express as px
+import pydeck as pdk
+import streamlit as st
+from sklearn.cluster import DBSCAN
 
 st.set_page_config(page_title="Bangkok Airbnb Analysis", layout="wide")
 st.title('Bangkok Airbnb Listings Analysis')
@@ -126,17 +127,52 @@ try:
     st.write("Draw a scatter map for clusters here")
     
     # Create cluster layer
+    scatter_layer = pdk.Layer(
+    "ScatterplotLayer",
+    viz_data,
+    get_position=["longitude", "latitude"],
+    get_radius=40,
+    get_fill_color="color",
+    opacity=0.8,
+    pickable=True
+    )
 
-    
-    # Create and display the map
+    view_state = pdk.ViewState(
+    latitude=viz_data["latitude"].mean(),
+    longitude=viz_data["longitude"].mean(),
+    zoom=11,
+    pitch=0,
+    )
 
-    st.write("Draw a heatmap for clusters here")
+    # Render
+    st.pydeck_chart(pdk.Deck(
+    layers=[scatter_layer],
+    initial_view_state=view_state,
+    map_style=MAP_STYLES[map_style]
+))
+
     
     # Create heatmap layer    
+    heatmap_layer = pdk.Layer(
+    "HeatmapLayer",
+    viz_data,
+    get_position="[longitude, latitude]",
+    opacity=0.5,
+    pickable=True
+    )
 
+    view_state = pdk.ViewState(
+    latitude=viz_data['latitude'].mean(),
+    longitude=viz_data['longitude'].mean(),
+    zoom=10
+    )
     
-    # Create and display the map
-
+    st.pydeck_chart(pdk.Deck(
+    layers=[heatmap_layer],
+    initial_view_state=view_state,
+    map_style=MAP_STYLES[map_style]
+    ))
+    
     st.write("Draw a hexagon map for clusters here")
     
     # Create hexagon layer    
