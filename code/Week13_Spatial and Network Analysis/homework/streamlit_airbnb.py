@@ -150,35 +150,53 @@ try:
     initial_view_state=view_state,
     map_style=MAP_STYLES[map_style]
 ))
-
-    
-    # Create heatmap layer    
+ 
     heatmap_layer = pdk.Layer(
-    "HeatmapLayer",
-    viz_data,
-    get_position="[longitude, latitude]",
-    opacity=0.5,
-    pickable=True
+        "HeatmapLayer",
+        viz_data,
+        get_position="[longitude, latitude]",
+        opacity=0.5,
+        pickable=True
     )
 
     view_state = pdk.ViewState(
-    latitude=viz_data['latitude'].mean(),
-    longitude=viz_data['longitude'].mean(),
-    zoom=10
+        latitude=viz_data['latitude'].mean(),
+        longitude=viz_data['longitude'].mean(),
+        zoom=10
     )
     
     st.pydeck_chart(pdk.Deck(
-    layers=[heatmap_layer],
-    initial_view_state=view_state,
-    map_style=MAP_STYLES[map_style]
+        layers=[heatmap_layer],
+        initial_view_state=view_state,
+        map_style=MAP_STYLES[map_style]
     ))
     
     st.write("Draw a hexagon map for clusters here")
     
-    # Create hexagon layer    
+    hexagon_layer = pdk.Layer(
+        "HexagonLayer",
+        data=viz_data,
+        get_position=["longitude", "latitude"],
+        auto_highlight=True,
+        elevation_scale=0,
+        pickable=True,
+        extruded=False,
+        coverage=1,
+        opacity=0.6,
+    )
 
+    hex_view_state = pdk.ViewState(
+        latitude=viz_data['latitude'].mean(),
+        longitude=viz_data['longitude'].mean(),
+        zoom=10,
+        pitch=0,
+    )
 
-    # Create and display the map
+    st.pydeck_chart(pdk.Deck(
+        layers=[hexagon_layer],
+        initial_view_state=hex_view_state,
+        map_style=MAP_STYLES[map_style]
+    ))
 
     
     # Cluster Analysis
