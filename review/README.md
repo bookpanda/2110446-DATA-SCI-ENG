@@ -63,4 +63,22 @@ df[["Pclass", "Age", "SibSp"]] = pd.DataFrame(
     num_imp.fit_transform(df[["Pclass", "Age", "SibSp"]])
 )
 
+# one-hot encode categorical variables
+enc = OneHotEncoder(handle_unknown="ignore")
+nominal_columns = ["Embarked"]
+enc_df = pd.DataFrame(enc.fit_transform(df[nominal_columns]).toarray())
+unique_vals = enc.categories_[0]
+new_col_names = [f"Embarked_{val}" for val in unique_vals]
+enc_df.columns = new_col_names
+df = pd.concat([df, enc_df], axis=1)
+
+# apply lambda function to a column
+df["Survived"] = df["Survived"].apply(lambda x: 1.0 if x > 0.5 else 0.0)
+# split data into train and test sets
+y = df.pop("Survived")
+X = df
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, stratify=y, test_size=0.3, random_state=123
+)
+survived_train = y_train.sum() / y_train.shape[0]
 ```
