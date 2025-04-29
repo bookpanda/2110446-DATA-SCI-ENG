@@ -35,4 +35,19 @@ grouped_df = (
 sport_df = grouped_df[grouped_df["category"] == "Sports"].reset_index()
 comedy_df = grouped_df[grouped_df["category"] == "Comedy"].reset_index()
 return (sport_df['views'] > comedy_df["views"]).sum()
+
+# remove columns with more than 50% missing values
+half_missing = df.isnull().sum() > df.shape[0] // 2
+df.drop(df.columns[half_missing], axis=1, inplace=True)
+
+# remove columns with more than 70% of the same value
+flat_cols = df.select_dtypes(include="object").apply(
+    lambda col: col.value_counts(normalize=True).max() > 0.7
+)
+df.drop(columns=flat_cols[flat_cols].index, inplace=True)
+
+
+
 ```
+
+#
