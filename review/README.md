@@ -89,6 +89,10 @@ survived_train = y_train.sum() / y_train.shape[0]
 hw.dropna(subset=['label'], inplace=True)
 hw.drop(columns=['id','gill-attachment', 'gill-spacing'], inplace=True)
 hw.reset_index(inplace=True)
+```
 
+## Logistic Regression
+- must do standard scaling for all features
+```py
 
 ```
