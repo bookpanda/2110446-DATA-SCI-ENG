@@ -46,8 +46,21 @@ flat_cols = df.select_dtypes(include="object").apply(
 )
 df.drop(columns=flat_cols[flat_cols].index, inplace=True)
 
+# remove rows with missing values in specific columns
+df.dropna(subset=["Survived"], inplace=True)
 
+# get quartiles
+q1, q3 = np.percentile(df["Fare"], [25, 75])
+# replace outliers with the min/max of the quartiles
+df.loc[df["Fare"] < min_outlier, "Fare"] = min_outlier
+
+# get the number of missing values in each column
+null_counts = df.isnull().sum()
+
+# impute missing values with the mean
+num_imp = SimpleImputer(missing_values=np.nan, strategy="mean")
+df[["Pclass", "Age", "SibSp"]] = pd.DataFrame(
+    num_imp.fit_transform(df[["Pclass", "Age", "SibSp"]])
+)
 
 ```
-
-#
