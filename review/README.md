@@ -82,3 +82,13 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 survived_train = y_train.sum() / y_train.shape[0]
 ```
+
+## Random Forest
+```py
+# clean
+hw.dropna(subset=['label'], inplace=True)
+hw.drop(columns=['id','gill-attachment', 'gill-spacing'], inplace=True)
+hw.reset_index(inplace=True)
+
+
+```
