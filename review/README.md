@@ -1,4 +1,37 @@
 # Visualization
+## Matplotlib
+2 styles: pyplot and OOP (should not mix)
+### pyplot
+```python
+import matplotlib.pyplot as plt
+x = [1, 2, 3, 4]
+y = [10, 20, 30, 40]
+plt.plot(x, y)
+plt.title("Simple Plot")
+plt.xlabel("X axis")
+plt.ylabel("Y axis")
+plt.show()
+```
+
+### OOP
+```python
+import matplotlib.pyplot as plt
+x = [1, 2, 3, 4]
+y = [10, 20, 30, 40]
+fig, ax = plt.subplots()
+ax.plot(x, y)
+ax.set_title("Simple Plot")
+ax.set_xlabel("X axis")
+ax.set_ylabel("Y axis")
+plt.show()
+
+# subplots: fig=box of all plots, each axis=1 graph
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+```
+
+## Plotly
+- based on JS, interactive
+- 2 styles: Graph Objects Interface (more customizable), Plotly Express (high-level)
 
 # Data Engineering
 
