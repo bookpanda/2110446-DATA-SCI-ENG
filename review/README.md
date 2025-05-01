@@ -31,7 +31,30 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
 ## Plotly
 - based on JS, interactive
-- 2 styles: Graph Objects Interface (more customizable), Plotly Express (high-level)
+- 2 styles: Graph Objects Interface (more customizable), Plotly Express (high-level), don't mix
+### Components
+- Data = list of traces (go.Scatter, go.Bar, etc.)
+- Layout = dict of layout properties (title, xaxis, yaxis, etc.)
+- Figures (go.Figure) = data + layout
+
+## Network
+### Random Network
+- node degree graph will be normal distribution
+
+### Small-world Network
+- high clustering, short path length
+- social connection, email, telephone calls
+
+### Scale-free Network
+- node degree graph will be power law distribution (exponential decrease)
+- most nodes: low degree, few nodes: high degree (hubs)
+- social network (famous people), citation
+
+### Centrality
+- Degree Centrality: important node = high degree
+- Closeness Centrality: important node = short path to all other nodes
+- Betweenness Centrality: important node = high betweenness (is in most shortest paths between nodes)
+- Eigenvector Centrality: important node = connected to other important nodes
 
 # Data Engineering
 
