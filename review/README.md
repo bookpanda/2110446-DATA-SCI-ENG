@@ -168,6 +168,34 @@ all_genres = df_imdb.select(
 )
 all_genres.show()
 all_genres.select(F.trim(F.col("Genre"))).distinct().count()
+
+# replace column names with underscores
+cols = [c.replace(' ', '_') for c in df.columns]
+df = df.toDF(*cols)
+
+df.select(df['Date'], df['AveragePrice']).show(5)
+df.select(df['Date'], df['Small_Bags']+df['Large_Bags']).show(5)
+df.filter(df['Total_Bags'] < 8000).show(3)
+df.filter((df['Total_Bags'] < 8000) & (df.year > 2015)).select('Date', 'Total_Bags').show(3)
+df.filter('Total_Bags < 8000 and year > 2015').select('Date', 'Total_Bags').show(3)
+df.select('type').distinct().show()
+from pyspark.sql.functions import avg, min, max
+df.select(min('AveragePrice'), avg('AveragePrice'), max('AveragePrice')).show()
+df.groupby('type').count().show()
+df.groupby('year', 'type').agg({'AveragePrice': 'avg'}).orderBy('year', 'type').show()
+
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+def pricegroup_mapping(price):
+    if price < 1:
+        return 'cheap'
+    if price < 2:
+        return 'moderate'
+    return 'expensive'
+to_pricegroup = udf(pricegroup_mapping, StringType())
+df.select('Date', 'AveragePrice', to_pricegroup('AveragePrice')).show(5)
+new_df = df.withColumn('pricegroup', to_pricegroup(df.AveragePrice))
+new_df.select('AveragePrice', 'pricegroup').show(5)
 ```
 
 ## Kafka
