@@ -130,9 +130,127 @@ print(f"User with the most followers: {user_with_most_followers} with {max_follo
 ```
 
 ## Spark
+```py
+from pyspark.sql import SparkSession
+from pyspark.sql import SQLContext
 
+spark = SparkSession.builder\
+        .master(spark_url)\
+        .appName('Spark Tutorial')\
+        .config('spark.ui.port', '4040')\
+        .getOrCreate()
+
+df_imdb = spark.read.csv("netflix-rotten-tomatoes-metacritic-imdb.csv", header=True, inferSchema=True)
+cols = [c.replace(' ', '_') for c in df_imdb.columns]
+df_imdb = df_imdb.toDF(*cols)
+df_imdb.printSchema()
+# show 5 rows
+df_imdb.show(5)
+
+from pyspark.sql.functions import avg, min, max
+df_imdb.select(max("Hidden_Gem_Score"), avg("Hidden_Gem_Score")).show()
+
+# how many movies are in Korean?
+df_imdb.filter(df_imdb["Languages"].like("%Korea%")).count()
+
+# director with highest avg hidden gem score
+df_imdb.groupby("Director") \
+    .agg(avg("Hidden_Gem_Score").alias("Avg_Hidden_Gem_Score")) \
+    .sort("Avg_Hidden_Gem_Score", ascending=False) \
+    .show()
+
+# how many genres are there?
+from pyspark.sql import functions as F
+all_genres = df_imdb.select(
+    F.explode(
+        F.split(F.col("Genre"), ",")
+    ).alias("Genre")
+)
+all_genres.show()
+all_genres.select(F.trim(F.col("Genre"))).distinct().count()
+```
 
 ## Kafka
+```py
+from kafka import KafkaConsumer, KafkaProducer
+import avro.schema
+import avro.io
+import io
+import hashlib, json
+import threading
+import time
+
+def serialize(schema, obj):
+    bytes_writer = io.BytesIO()
+    encoder = avro.io.BinaryEncoder(bytes_writer)
+    writer = avro.io.DatumWriter(schema)
+    writer.write(obj, encoder)
+    return bytes_writer.getvalue()
+
+def deserialize(schema, raw_bytes):
+    bytes_reader = io.BytesIO(raw_bytes)
+    decoder = avro.io.BinaryDecoder(bytes_reader)
+    reader = avro.io.DatumReader(schema)
+    return reader.read(decoder)
+
+schema_file = 'transaction.avsc'
+txschema = avro.schema.parse(open(schema_file).read())
+schema_file = 'submit.avsc'
+submitschema = avro.schema.parse(open(schema_file).read())
+schema_file = 'result.avsc'
+resultschema = avro.schema.parse(open(schema_file).read())
+# transaction.avsc
+{
+   "namespace": "assignment.avro",
+   "type": "record",
+   "name": "transaction",
+   "fields": [
+      {"name": "txid", "type": "string"},
+      {"name": "payer", "type": "string"},
+      {"name": "payee", "type": "string"},
+      {"name": "amount", "type": "int"}
+   ] 
+ }
+
+kafka_broker = 'lab.aimet.tech:9092'
+producer = KafkaProducer(bootstrap_servers=[kafka_broker])
+
+txconsumer = KafkaConsumer(
+    'transaction',
+     bootstrap_servers=[kafka_broker],
+     enable_auto_commit=True,
+     value_deserializer=lambda x: deserialize(txschema, x))
+resultconsumer = KafkaConsumer(
+    'result',
+     bootstrap_servers=[kafka_broker],
+     enable_auto_commit=True,
+     value_deserializer=lambda x: deserialize(resultschema, x))
+
+def gen_signature(txid, payer, payee, amount, token):
+    o = {'txid': txid, 'payer': payer, 'payee': payee, 'amount': amount, 'token': token}
+    return hashlib.md5(json.dumps(o, sort_keys=True).encode('utf-8')).hexdigest()
+
+def monitor_thread():
+    for message in resultconsumer:
+        print(message.value)
+monitor = threading.Thread(target=monitor_thread, daemon=True)
+monitor.start()
+
+print('Running TX Consumer')
+for message in txconsumer:
+    txid = message.value['txid']
+    payer = message.value['payer']
+    payee = message.value['payee']
+    amount = message.value['amount']
+
+    signature = gen_signature(txid, payer, payee, amount, token)
+    submit_data = {'vid': vid, 'txid': txid, 'signature': signature}
+    serialized_submit_data = serialize(submitschema, submit_data)
+
+    producer.send('submit', serialized_submit_data)
+    print(message.value)
+    print(f"submit: {submit_data}")
+```
 
 # Data Science
 ## Pandas
