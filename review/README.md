@@ -57,6 +57,12 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 - Eigenvector Centrality: important node = connected to other important nodes
 
 # Data Engineering
+## Redis
+
+## Spark
+
+
+## Kafka
 
 # Data Science
 ## Pandas
@@ -223,6 +229,7 @@ model_lasso.fit(X, y)
 - errors are independent
 
 ## k Nearest Neighbors
+- can use GridSearchCV to find best k
 
 ## Random Forest
 ```py
