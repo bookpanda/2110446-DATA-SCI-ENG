@@ -139,6 +139,41 @@ X_train, X_test, y_train, y_test = train_test_split(
 survived_train = y_train.sum() / y_train.shape[0]
 ```
 
+## Data Prep
+kinds of data:
+1. Categorical: nominal (no order), ordinal (order)
+2. Numerical: discrete (countable), continuous (infinite values)
+
+### Unqalified features
+- IDs
+- missing values > 50%
+- categorical vars
+    - too many unique values (becomes ID) -> grouping
+    - flat values (underfit)
+- zip code -> distance to closest branch
+
+### Impute
+- numerical: mean, median
+- categorical: mode
+- group stats e.g. income by age group
+
+### Categorical to numerical
+- ordinal: enumerate (bachelor=1, master=2, phd=3)
+- nominal: one-hot (100, 010, 001), dummy codes (10, 01, 00), target avg, weight of evidence
+
+### Feature Transformation
+- log
+- binning
+
+K-fold cross-validation
+- fixes overfitting on test
+- split data into k folds
+- train on k-1 folds, test on 1 fold
+- repeat k times, each time using a different fold as test set
+
+### Data Leakage Sols
+- split by subjects/videos rather than individual images
+- for time series, split by time
 ## Random Forest
 ```py
 # clean
