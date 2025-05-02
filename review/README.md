@@ -174,16 +174,60 @@ K-fold cross-validation
 ### Data Leakage Sols
 - split by subjects/videos rather than individual images
 - for time series, split by time
+
+## Classification
+- Naive Bayes
+- Logistic Regression
+- Random Forest
+- Gradient Boosting (many Decision Trees trained independently)
+- XGBoost (Gradient Boosting with regularization, optimization)
+- k-Nearest Neighbors
+
+## Regression
+- Linear Regression
+- Decision Tree
+- Support Vector Regression
+
+## Linear Regression
+y = Xw + b
+### Assumptions
+- must do standard scaling for all features
+- linear relationship
+- error is normally distributed (remove outliers, log transform)
+- error has equal variance (remove outliers, log transform)
+- error are independent
+### Regularization
+- Linear regression: MSE
+- Ridge loss: MSE + squared error (L2)
+  - when there are many small/colinear features
+- Lasso loss: MSE + absolute error (L1)
+  - expect few important features
+- ElasticNet: MSE + aL1 + bL2
+```py
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
+model_lr = LinearRegression()
+model_ridge = Ridge(alpha=1.0)
+model_lasso = Lasso(alpha=0.1)
+model_elastic = ElasticNet(alpha=1.0, l1_ratio=0.5)
+
+model_lr.fit(X, y)
+model_ridge.fit(X, y)
+model_lasso.fit(X, y)
+```
+
+## Logistic Regression
+### Assumptions
+- must do standard scaling for all features
+- mean of logit is linear
+  - (logit, x) = linear relationship
+- errors are independent
+
+## k Nearest Neighbors
+
 ## Random Forest
 ```py
 # clean
 hw.dropna(subset=['label'], inplace=True)
 hw.drop(columns=['id','gill-attachment', 'gill-spacing'], inplace=True)
 hw.reset_index(inplace=True)
-```
-
-## Logistic Regression
-- must do standard scaling for all features
-```py
-
 ```
