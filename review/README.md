@@ -58,6 +58,76 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
 # Data Engineering
 ## Redis
+```py
+rd = redis.Redis(host='lab.aimet.tech', charset="utf-8", decode_responses=True)
+rd.auth(username='hw', password='hw')
+
+# list all keys
+rd.keys()
+
+# scan for keys beginning with "user" (get no. of users), 100 at a time
+cursor = 0
+keys = []
+while True:
+    cursor, batch = r.scan(cursor=cursor, match='user*', count=100)
+    keys.extend(batch)
+    if cursor == 0:
+        break
+print([k.decode() for k in keys])  # decode from bytes to str
+
+# username of user id "600"
+rd.get('user:600:name')
+# id of username "excitedPie4"
+rd.get("username:excitedPie4")
+# follows count
+rd.scard("user:567:follows")
+
+# avg no. of follows per user
+cursor = 0
+follow_count = 0
+while True:
+    cursor, keys = rd.scan(cursor=cursor, match='user:*:follows', count=100)
+    print(cursor, keys)
+    for key in keys:
+        follow_count += rd.scard(key)
+
+    if cursor == 0:
+        break
+print(f"Average number of follows per user: {follow_count/user_count}")
+
+# users follows between 5 and 10
+cursor = 0
+user_5_10 = 0
+while True:
+    cursor, keys = rd.scan(cursor=cursor, match='user:*:follows', count=100)
+    print(cursor, keys)
+    for key in keys:
+        follows = rd.scard(key)
+        if follows >= 5 and follows <= 10:
+            user_5_10 += 1
+
+    if cursor == 0:
+        break
+print(f"No. of users that follow 5-10 users: {user_5_10}")
+
+# user with most followers
+cursor = 0
+max_followers = 0
+user_with_most_followers = None
+while True:
+    cursor, keys = rd.scan(cursor=cursor, match='user:*:followed_by', count=100)
+    print(cursor, keys)
+    for key in keys:
+        follows = rd.scard(key)
+
+        if follows > max_followers:
+            max_followers = follows
+            user_with_most_followers = key
+
+    if cursor == 0:
+        break
+print(f"User with the most followers: {user_with_most_followers} with {max_followers} followers")
+```
 
 ## Spark
 
